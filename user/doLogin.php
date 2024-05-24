@@ -27,7 +27,8 @@ if (empty($password)) {
 
 $password = md5($password);
 
-$sql = "SELECT * FROM users WHERE account ='$account' AND password = '$password' AND valid = 1";
+$sql = "SELECT * FROM users 
+WHERE account ='$account' AND password = '$password' AND valid = 1";
 
 $result = $conn->query($sql);
 $userCount = $result->num_rows;
