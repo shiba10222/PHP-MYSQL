@@ -1,5 +1,6 @@
 <?php
 require_once("../db-connect.php");
+session_start();
 
 $user_id = 8;
 $sqlUserLikes = "SELECT * FROM user_like WHERE user_id = $user_id";
@@ -62,6 +63,7 @@ $resultCount = $result->num_rows;
 </head>
 
 <body>
+
     <div class="container">
         <?php include("nav.php"); ?>
         <h1><?= $pageTitle ?></h1>
@@ -121,14 +123,42 @@ $resultCount = $result->num_rows;
                         <a class="text-decoration-none" href="product.php?id=<?= $product["id"] ?>"><?= $product["name"] ?></a>
                     </h3>
                     <div class="text-end fs-4 text-danger">$<?= number_format($product["price"]) ?></div>
+                    <div class="d-grid">
+                        <button class="btn btn-primary add-cart" data-id="<?= $product["id"] ?>">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </button>
+                    </div>
                 </div>
             <?php endforeach ?>
         </div>
     </div>
-    <!-- Bootstrap JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <?php include("../js.php") ?>
+    <script>
+        const addCartBtns = document.querySelectorAll(".add-cart")
+        const cartCount = document.querySelector("#cartCount");
+        for (let i = 0; i < addCartBtns.length; i++) {
+            addCartBtns[i].addEventListener("click", function() {
+                let id = this.dataset.id;
+                // console.log(id);
+                $.ajax({
+                        method: "POST", //or GET
+                        url: "http://localhost/api/addCart.php",
+                        dataType: "json",
+                        data: {
+                            id: id,
+                        }
+                    })
+                    .done(function(response) {
+                        // console.log(response);
+                        cartCount.textContent = response.length;
+                    }).fail(function(jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                    });
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+            })
+        }
+    </script>
+
 </body>
 
 </html>

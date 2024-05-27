@@ -1,5 +1,7 @@
 <?php
 require_once("../db-connect.php");
+session_start();
+
 
 if (!isset($_GET["id"])) {
     header("location:product-list.php");
@@ -54,6 +56,7 @@ $rowsLiked = $resultLiked->fetch_all(MYSQLI_ASSOC);
                 <div class="text-danger fs-2 text-end">
                     $<?= number_format($row["price"]) ?>
                 </div>
+                
                 <h3>收藏者</h3>
                 <ul>
                     <?php foreach ($rowsLiked as $user) : ?>
