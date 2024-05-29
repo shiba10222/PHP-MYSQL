@@ -45,7 +45,7 @@ if ($userCount == 0) {
     header("location:signin.php");
     exit;
 }
-// 登入成功
+
 $row = $result->fetch_assoc();
 // var_dump($row);
 unset($_SESSION["errorMsg"]);

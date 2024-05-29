@@ -17,4 +17,25 @@
             color: palevioletred;
         }
     }
+    .logo {
+        height: 48px;
+    }
+    .cart-icon {
+        font-size: 30px;
+        text-decoration: none;
+        color: #000;
+        span {
+            top:-5px;
+            right:-10px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: red;
+            color: #fff;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+        }
+    }
 </style>
