@@ -1,10 +1,39 @@
-<?php 
+<?php
 require_once("../db-conn.php");
-$sql="SELECT * FROM products ";
+$sqlAll = "SELECT * FROM products ";
 
-$result=$conn->query($sql);
-$rows=$result->fetch_all(MYSQLI_ASSOC);
+$resultAll = $conn->query($sqlAll);
+$rows = $resultAll->fetch_all(MYSQLI_ASSOC);
+$allProductCount = $resultAll->num_rows;
 
+
+
+$sqlCategory = "SELECT * FROM category ORDER BY id ASC";
+$resultCate = $conn->query($sqlCategory);
+$cateRows = $resultCate->fetch_all(MYSQLI_ASSOC);
+
+$categoryArr = [];
+foreach ($cateRows as $cate) {
+    $categoryArr[$cate["id"]] = $cate["name"]; // 重新整理新陣列
+}
+
+if (isset($_GET["category"])){
+    $cate_id = $_GET["category"];
+    $sql = "SELECT products.*, category.name AS category_name FROM products
+    JOIN category ON products.category_id = category.id
+    WHERE products.category_id=$cate_id 
+    ORDER BY products.id ASC";
+   
+} else {
+    $sql = "SELECT products.*, category.name AS category_name FROM products
+    JOIN category ON products.category_id = category.id
+    ORDER BY products.id ASC";
+}
+
+$result = $conn->query($sql);
+$productCount = $result->num_rows;
+$rows = $result->fetch_all(MYSQLI_ASSOC);
+$resultCount = $result->num_rows;
 ?>
 <!doctype html>
 <html lang="en">
@@ -19,10 +48,11 @@ $rows=$result->fetch_all(MYSQLI_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
     <style>
         .box {
-            
+
             max-width: 108px;
             height: auto;
         }
+
         .fixed-width {
             max-width: 200px;
         }
@@ -31,6 +61,14 @@ $rows=$result->fetch_all(MYSQLI_ASSOC);
 
 <body>
     <div class="container">
+        <ul class="nav nav-tabs ">
+            <?php foreach ($cateRows as $category) : ?>
+                <li class="nav-item">
+                    <a class="nav-link <?php if (isset($_GET["category"]) && $cate_id == $category["id"]) echo "active"; ?>" href="product-list.php?category=<?= $category["id"] ?>"><?= $category["name"] ?></a>
+                </li>
+            <?php endforeach ?>
+
+        </ul>
         <table class="table table-bordered">
             <thead>
                 <tr class="text-nowrap text-center">
@@ -45,17 +83,19 @@ $rows=$result->fetch_all(MYSQLI_ASSOC);
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($rows as $product):?>
-                <tr>
-                    <td class="align-middle text-center"><?=$product["id"]?></td>
-                    <td class="align-middle"><?=$product["name"]?></td>
-                    <td class="box"><img class="object-fit-cover img-fluid" src="/product_images/<?= $product["pic"] ?>" alt="<?= $product["name"] ?>"></td>
-                    <td class="fixed-width align-middle"><p><?=$product["description"]?></p></td>
-                    <td class="align-middle text-center"><?=$product["category_id"]?></td>
-                    <td class="align-middle text-center"><?=$product["price"]?></td>
-                    <td class="align-middle text-center"><?=$product["on_shelves_time"]?></td>
-                    <td class="align-middle text-center"><?=$product["inventory"]?></td>
-                </tr>
+                <?php foreach ($rows as $product) : ?>
+                    <tr>
+                        <td class="align-middle text-center"><?= $product["id"] ?></td>
+                        <td class="align-middle"><?= $product["name"] ?></td>
+                        <td class="box"><img class="object-fit-cover img-fluid" src="/product_images/<?= $product["pic"] ?>" alt="<?= $product["name"] ?>"></td>
+                        <td class="fixed-width align-middle">
+                            <p><?= $product["description"] ?></p>
+                        </td>
+                        <td class="align-middle text-center"><?= $product["category_name"] ?></td>
+                        <td class="align-middle text-center"><?= $product["price"] ?></td>
+                        <td class="align-middle text-center"><?= $product["on_shelves_time"] ?></td>
+                        <td class="align-middle text-center"><?= $product["inventory"] ?></td>
+                    </tr>
                 <?php endforeach ?>
             </tbody>
         </table>
