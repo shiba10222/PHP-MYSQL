@@ -15,7 +15,7 @@ if (isset($_GET["search"])) {
     $firstItem = ($page - 1) * $perPage;
     $pageCount = ceil($allUserCount / $perPage);
 
-    $sql = "SELECT *FROM users WHERE valid = 1 LIMIT $firstItem, $perPage";
+    $sql = "SELECT * FROM users WHERE valid = 1 LIMIT $firstItem, $perPage";
     $order = $_GET["order"];
     // if ($order == 1) {// id ASC
     //     $sql = "SELECT * FROM users WHERE calid=1 ORDER BY id ASC LIMIT $firstItem, $perPage";

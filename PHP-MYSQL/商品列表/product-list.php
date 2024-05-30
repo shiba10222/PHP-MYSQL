@@ -1,5 +1,5 @@
 <?php
-require_once("../db-conn.php");
+require_once("db-conn.php");
 $sqlAll = "SELECT * FROM products ";
 
 $resultAll = $conn->query($sqlAll);
@@ -17,13 +17,13 @@ foreach ($cateRows as $cate) {
     $categoryArr[$cate["id"]] = $cate["name"]; // 重新整理新陣列
 }
 
-if (isset($_GET["category"])){
+if (isset($_GET["category"]) ){
     $cate_id = $_GET["category"];
+
     $sql = "SELECT products.*, category.name AS category_name FROM products
     JOIN category ON products.category_id = category.id
     WHERE products.category_id=$cate_id 
     ORDER BY products.id ASC";
-   
 } else {
     $sql = "SELECT products.*, category.name AS category_name FROM products
     JOIN category ON products.category_id = category.id
@@ -34,6 +34,9 @@ $result = $conn->query($sql);
 $productCount = $result->num_rows;
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 $resultCount = $result->num_rows;
+if (isset($_GET["page"])) {
+    $productCount = $allProductCount;
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -45,31 +48,24 @@ $resultCount = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- Bootstrap CSS v5.2.1 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-    <style>
-        .box {
-
-            max-width: 108px;
-            height: auto;
-        }
-
-        .fixed-width {
-            max-width: 200px;
-        }
-    </style>
+    
+    <?php include("css.php") ?>
 </head>
 
 <body>
     <div class="container">
-        <ul class="nav nav-tabs ">
-            <?php foreach ($cateRows as $category) : ?>
-                <li class="nav-item">
-                    <a class="nav-link <?php if (isset($_GET["category"]) && $cate_id == $category["id"]) echo "active"; ?>" href="product-list.php?category=<?= $category["id"] ?>"><?= $category["name"] ?></a>
-                </li>
-            <?php endforeach ?>
-
-        </ul>
-        <table class="table table-bordered">
+        <h1>商品列表</h1>
+        <div class="d-flex justify-content-between mt-3">
+            <ul class="nav nav-tabs ">
+                <?php foreach ($cateRows as $category) : ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php if (isset($_GET["category"]) && $cate_id == $category["id"]) echo "active"; ?>" href="product-list.php?category=<?= $category["id"] ?>"><?= $category["name"] ?></a>
+                    </li>
+                <?php endforeach ?>
+            </ul>
+            <a class="btn btn-primary" href="addProduct.php">新增商品<i class="fa-solid fa-plus"></i></a>
+        </div>
+        <table class="table table-hover">
             <thead>
                 <tr class="text-nowrap text-center">
                     <th>編號</th>
