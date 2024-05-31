@@ -19,7 +19,7 @@
                     <div class="mb-2">
                         <label for="" class="form-label">*帳號</label>
                         <input type="text" name="account" class="form-control">
-                        <div class="form-text">請輸 入4~20字元的帳號</div>
+                        <div class="form-text">請輸入4~20字元的帳號</div>
                     </div>
                     <div class="mb-2">
                         <label for="" class="form-label">*姓名</label>

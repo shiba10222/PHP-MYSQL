@@ -1,11 +1,12 @@
 <?php
 require_once("db-conn.php");
-$sqlAll = "SELECT * FROM products ";
-
-$resultAll = $conn->query($sqlAll);
-$rows = $resultAll->fetch_all(MYSQLI_ASSOC);
-$allProductCount = $resultAll->num_rows;
-
+// if (!isset($_POST["category"])) {
+//     $sqlAll = "SELECT products.*, imgs.filename AS imgname FROM products
+// JOIN imgs ON products.id=imgs.product_id";
+// }
+// $resultAll = $conn->query($sqlAll);
+// $rowsAll = $resultAll->fetch_all(MYSQLI_ASSOC);
+// $allProductCount = $resultAll->num_rows;
 
 
 $sqlCategory = "SELECT * FROM category ORDER BY id ASC";
@@ -17,16 +18,17 @@ foreach ($cateRows as $cate) {
     $categoryArr[$cate["id"]] = $cate["name"]; // 重新整理新陣列
 }
 
-if (isset($_GET["category"]) ){
+if (isset($_GET["category"])) {
     $cate_id = $_GET["category"];
-
-    $sql = "SELECT products.*, category.name AS category_name FROM products
+    $sql = "SELECT products.*, category.name AS category_name, imgs.filename AS imgname  FROM products
     JOIN category ON products.category_id = category.id
+    JOIN imgs ON products.id=imgs.product_id
     WHERE products.category_id=$cate_id 
     ORDER BY products.id ASC";
 } else {
-    $sql = "SELECT products.*, category.name AS category_name FROM products
+    $sql = "SELECT products.*, category.name AS category_name,imgs.filename AS imgname FROM products
     JOIN category ON products.category_id = category.id
+    JOIN imgs ON products.id=imgs.product_id
     ORDER BY products.id ASC";
 }
 
@@ -48,7 +50,7 @@ if (isset($_GET["page"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- Bootstrap CSS v5.2.1 -->
-    
+
     <?php include("css.php") ?>
 </head>
 
@@ -63,7 +65,7 @@ if (isset($_GET["page"])) {
                     </li>
                 <?php endforeach ?>
             </ul>
-            <a class="btn btn-primary" href="addProduct.php">新增商品<i class="fa-solid fa-plus"></i></a>
+            <a class="btn btn-primary" href="createProduct.php">新增商品<i class="fa-solid fa-plus"></i></a>
         </div>
         <table class="table table-hover">
             <thead>
@@ -76,21 +78,25 @@ if (isset($_GET["page"])) {
                     <th>價格</th>
                     <th>上架時間</th>
                     <th>庫存量</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($rows as $product) : ?>
+                <?php foreach ($rows as $prod) : ?>
                     <tr>
-                        <td class="align-middle text-center"><?= $product["id"] ?></td>
-                        <td class="align-middle"><?= $product["name"] ?></td>
-                        <td class="box"><img class="object-fit-cover img-fluid" src="/product_images/<?= $product["pic"] ?>" alt="<?= $product["name"] ?>"></td>
-                        <td class="fixed-width align-middle">
-                            <p><?= $product["description"] ?></p>
+                        <td class="align-middle text-center"><?= $prod["id"] ?></td>
+                        <td class="align-middle"><?= $prod["name"] ?></td>
+                        <td class="box">
+                            <img class="object-fit-cover img-fluid" src="/PHP-MYSQL/product_all/product_images/<?= $prod["imgname"] ?>" alt="">
                         </td>
-                        <td class="align-middle text-center"><?= $product["category_name"] ?></td>
-                        <td class="align-middle text-center"><?= $product["price"] ?></td>
-                        <td class="align-middle text-center"><?= $product["on_shelves_time"] ?></td>
-                        <td class="align-middle text-center"><?= $product["inventory"] ?></td>
+                        <td class="fixed-width align-middle">
+                            <p><?= $prod["description"] ?></p>
+                        </td>
+                        <td class="align-middle text-center"><?= $prod["category_id"] ?></td>
+                        <td class="align-middle text-center"><?= $prod["price"] ?></td>
+                        <td class="align-middle text-center"><?= $prod["on_shelves_time"] ?></td>
+                        <td class="align-middle text-center"><?= $prod["stock"] ?></td>
+                        <td class="align-middle text-center"><a class="btn btn-primary" href="product-edit.php?id=<?= $prod["id"] ?>"><i class="fa-solid fa-pen-to-square"></i></a></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
